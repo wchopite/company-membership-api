@@ -13,7 +13,7 @@ export class LoggerFactory {
       case 'nestjs':
         return new NestJSLoggerAdapter(configService);
       case 'pino':
-        throw new Error('Winston adapter not implemented yet');
+        throw new Error('Pino adapter not implemented yet');
       case 'winston':
         throw new Error('Winston adapter not implemented yet');
       default:
