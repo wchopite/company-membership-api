@@ -1,15 +1,15 @@
 export interface ILoggerService {
   setContext(context: string): void;
-  log(message: any, context?: string, ...optionalParams: any[]): void;
+  log(message: any, ...optionalParams: any[]): void;
   error(
     message: any,
     trace?: string,
-    context?: string,
+
     ...optionalParams: any[]
   ): void;
-  warn(message: any, context?: string, ...optionalParams: any[]): void;
-  debug(message: any, context?: string, ...optionalParams: any[]): void;
-  verbose(message: any, context?: string, ...optionalParams: any[]): void;
+  warn(message: any, ...optionalParams: any[]): void;
+  debug(message: any, ...optionalParams: any[]): void;
+  verbose(message: any, ...optionalParams: any[]): void;
 
   logRequest(method: string, url: string, params?: any): void;
   logResponse(

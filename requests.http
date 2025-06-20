@@ -1,0 +1,73 @@
+### Company Membership API - Test Collection
+
+# Variables
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### 1. Register New Company Membership (PYME)
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Tech Solutions PYME",
+  "cuit": "20-12345678-9",
+  "type": "PYME"
+}
+
+### 2. Register New Company Membership (CORPORATE)
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Global Corp Enterprises",
+  "cuit": "30-87654321-2",
+  "type": "CORPORATE"
+}
+
+### 3. Get Recent Memberships (Last 30 days)
+GET {{baseUrl}}/companies/recent-memberships
+Accept: {{contentType}}
+
+### 4. Get Companies with Recent Transfers (not implemented yet)
+# GET {{baseUrl}}/companies/with-recent-transfers
+# Accept: {{contentType}}
+
+### 5. Error Cases - Duplicate CUIT
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Duplicate Company",
+  "cuit": "20-12345678-9",
+  "type": "PYME"
+}
+
+### 6. Error Cases - Invalid CUIT Format
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Invalid CUIT Company",
+  "cuit": "invalid-cuit",
+  "type": "PYME"
+}
+
+### 7. Error Cases - Missing Required Fields
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "",
+  "cuit": "20-11111111-1",
+  "type": "PYME"
+}
+
+### 8. Error Cases - Invalid Company Type
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Test Company",
+  "cuit": "20-22222222-2",
+  "type": "INVALID_TYPE"
+}
