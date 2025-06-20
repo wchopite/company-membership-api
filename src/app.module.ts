@@ -8,7 +8,9 @@ import {
   globalConfig,
   globalConfigSchemaValidation,
 } from './shared/config/app.config';
+
 import { DATABASE_TYPES } from './shared/database/database.constants';
+import { CompanyModule } from './contexts/company/company.module';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { DATABASE_TYPES } from './shared/database/database.constants';
     LoggerModule.forRoot(),
     DatabaseModule.forRoot(DATABASE_TYPES.SQLITE),
     HealthModule,
+    CompanyModule,
   ],
   controllers: [],
   providers: [],

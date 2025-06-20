@@ -52,7 +52,7 @@ export class DatabaseModule {
           inject: [getDataSourceToken()],
         },
       ],
-      exports: [TypeOrmModule, DATABASE_CONFIG_TOKEN],
+      exports: [TransactionManager, TypeOrmModule, DATABASE_CONFIG_TOKEN],
     };
   }
 }
