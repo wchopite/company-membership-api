@@ -2,7 +2,7 @@ import { Global, Module, DynamicModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerFactory, LoggerType } from './logger.factory';
 import { ILoggerService } from './logger.interface';
-import { LOGGER_SERVICE_TOKEN } from './logger.tokens';
+import { LoggerServiceToken } from './logger.tokens';
 
 @Global()
 @Module({})
@@ -13,7 +13,7 @@ export class LoggerModule {
       imports: [ConfigModule],
       providers: [
         {
-          provide: LOGGER_SERVICE_TOKEN,
+          provide: LoggerServiceToken,
           useFactory: (configService: ConfigService): ILoggerService => {
             const type =
               loggerType ||
@@ -23,7 +23,7 @@ export class LoggerModule {
           inject: [ConfigService],
         },
       ],
-      exports: [LOGGER_SERVICE_TOKEN],
+      exports: [LoggerServiceToken],
     };
   }
 }

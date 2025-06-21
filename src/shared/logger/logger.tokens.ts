@@ -1,1 +1,1 @@
-export const LOGGER_SERVICE_TOKEN = Symbol('shared.logger.service');
+export const LoggerServiceToken = Symbol('shared.logger.service');

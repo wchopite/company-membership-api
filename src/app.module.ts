@@ -11,6 +11,7 @@ import {
 
 import { DATABASE_TYPES } from './shared/database/database.constants';
 import { CompanyModule } from './contexts/company/company.module';
+import { TransactionModule } from './contexts/transaction/transaction.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CompanyModule } from './contexts/company/company.module';
     DatabaseModule.forRoot(DATABASE_TYPES.SQLITE),
     HealthModule,
     CompanyModule,
+    TransactionModule,
   ],
   controllers: [],
   providers: [],

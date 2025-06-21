@@ -20,10 +20,7 @@ import { MembershipCreatedDto } from '../dto/out/membership-created.dto';
 
 import { UseCase } from '../interfaces/use-case.interface';
 
-import {
-  ILoggerService,
-  LOGGER_SERVICE_TOKEN,
-} from '../../../../shared/logger';
+import { ILoggerService, LoggerServiceToken } from '../../../../shared/logger';
 import { TransactionManager } from 'src/shared/database/database.transaction-manager';
 
 @Injectable()
@@ -32,7 +29,7 @@ export class RegisterCompanyMembershipUseCase
 {
   constructor(
     private readonly transactionManager: TransactionManager,
-    @Inject(LOGGER_SERVICE_TOKEN)
+    @Inject(LoggerServiceToken)
     private readonly logger: ILoggerService,
     @Inject(CompanyRepositoryToken)
     private readonly companyRepository: CompanyRepository,

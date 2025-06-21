@@ -10,6 +10,7 @@ import {
   RegisterCompanyMembershipUseCase,
   GetRecentMembershipsUseCase,
 } from './application/use-cases';
+import { GetCompaniesWithRecentTransfersUseCase } from './application/use-cases/get-companies-with-recent-transfers.use-case';
 
 // Infrastructure - Implementations
 import { CompanyOrmEntity } from './infra/persistence/entities/company-orm.entity';
@@ -20,11 +21,13 @@ import { CompanyController } from './infra/api/controllers/company.controller';
 
 // Module Imports
 import { SharedServicesModule } from '../../shared/services/services.module';
+import { TransactionModule } from '../transaction/transaction.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CompanyOrmEntity, MembershipOrmEntity]),
     SharedServicesModule,
+    TransactionModule,
   ],
   controllers: [CompanyController],
   providers: [
@@ -38,12 +41,14 @@ import { SharedServicesModule } from '../../shared/services/services.module';
     },
     RegisterCompanyMembershipUseCase,
     GetRecentMembershipsUseCase,
+    GetCompaniesWithRecentTransfersUseCase,
   ],
   exports: [
     CompanyRepositoryToken,
     MembershipRepositoryToken,
     RegisterCompanyMembershipUseCase,
     GetRecentMembershipsUseCase,
+    GetCompaniesWithRecentTransfersUseCase,
   ],
 })
 export class CompanyModule {}
