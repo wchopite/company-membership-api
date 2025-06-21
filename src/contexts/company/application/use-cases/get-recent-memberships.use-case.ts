@@ -9,10 +9,7 @@ import {
   CompanyRepository,
   CompanyRepositoryToken,
 } from '../../domain/repositories/company.repository';
-import {
-  ILoggerService,
-  LOGGER_SERVICE_TOKEN,
-} from '../../../../shared/logger';
+import { ILoggerService, LoggerServiceToken } from '../../../../shared/logger';
 
 @Injectable()
 export class GetRecentMembershipsUseCase
@@ -23,7 +20,7 @@ export class GetRecentMembershipsUseCase
     private readonly membershipRepository: MembershipRepository,
     @Inject(CompanyRepositoryToken)
     private readonly companyRepository: CompanyRepository,
-    @Inject(LOGGER_SERVICE_TOKEN)
+    @Inject(LoggerServiceToken)
     private readonly logger: ILoggerService,
   ) {}
 

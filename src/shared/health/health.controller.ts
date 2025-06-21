@@ -1,10 +1,10 @@
 import { Controller, Get, HttpCode, Inject } from '@nestjs/common';
-import { ILoggerService, LOGGER_SERVICE_TOKEN } from '../logger';
+import { ILoggerService, LoggerServiceToken } from '../logger';
 
 @Controller('health')
 export class HealthController {
   constructor(
-    @Inject(LOGGER_SERVICE_TOKEN) private readonly logger: ILoggerService,
+    @Inject(LoggerServiceToken) private readonly logger: ILoggerService,
   ) {
     this.logger.setContext('HealthController');
   }
