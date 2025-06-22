@@ -1,0 +1,17 @@
+### Lambda Function
+
+El código de la Lambda, si bien es importante, hoy en día se puede implementar fácilmente (incluso con ayuda de IA), por lo que no creo que ese aspecto sea lo más relevante en este caso. Al final, una Lambda es simplemente una función que recibe una solicitud (Request), extrae la información necesaria y ejecuta una acción puntual. Tiene sus limitaciones, pero su simplicidad y propósito están bien definidos.
+
+Ahora bien, entiendo que esta sección está pensada más como una solución arquitectónica, considerando que probablemente el registro de empresas no sea un proceso constante y masivo, sino más bien esporádico o con picos en ciertos momentos. Además, suele involucrar lógica de negocio relativamente compleja: validaciones, aprobaciones, y quizás integración con servicios externos (como AFIP). Por eso mismo, en la solución que propongo en el backend principal (NestJS), manejo estos registros como una entidad separada (**Membership**), con su propio ciclo de vida y reglas.
+
+En ese contexto, una Lambda Function encaja bien porque no requiere tener recursos corriendo permanentemente y puede escalar automáticamente frente a esos picos. Se puede manejar de forma totalmente desacoplada del backend principal, lo que además ayuda a que este último siga respondiendo con agilidad para otras operaciones más frecuentes, como consultar empresas ya registradas.
+
+Respecto a cómo integrarla con el sistema principal, y asumiendo que el proceso de validación puede ser complejo (datos fiscales, validación externa, lógica de negocio), una buena opción sería **desacoplar mediante un sistema de mensajería** (como SQS o SNS). De esta forma, la Lambda se encarga de todo el trabajo "pesado" y, una vez finalizado, publica un evento. El backend (NestJS) escucha ese evento y registra o procesa internamente la información que necesita.
+
+Otra alternativa válida sería **mantener también un endpoint clásico en el backend principal** (NestJS), orientado a entornos internos o administrativos, y usar la Lambda para integraciones públicas o automatizadas (por ejemplo, formularios externos o sistemas de terceros). Esto puede aportar flexibilidad, aunque implique cierta duplicación de lógica en apariencia.
+
+De todos modos, esa duplicación no tiene por qué ser un problema si se estructura bien. Por ejemplo, la lógica de validación o transformación de datos puede estar **compartida en una librería común**, y cada entorno puede encargarse únicamente del transporte (HTTP o evento) y del manejo particular de errores o respuestas. Esto permite mantener una sola fuente de verdad para las reglas de negocio, sin atar toda la operación a una única arquitectura.
+
+Además, este pequeño "costo" de duplicación puede ser aceptable si a cambio ganamos flexibilidad: como permitir que el backend administre procesos internos con acceso total a los datos, mientras que la Lambda atiende solicitudes públicas, de terceros o de canales automatizados, con restricciones y escalabilidad más controlada.
+
+**En definitiva**, el uso de una Lambda acá tiene sentido si entendemos que no todo el sistema debe estar centralizado en el backend principal. Distribuir responsabilidades según el tipo de tráfico, complejidad del proceso y criticidad de los datos nos da más control, mejores tiempos de respuesta y una arquitectura que se adapta mejor al crecimiento o a situaciones particulares sin necesidad de sobredimensionar recursos.
