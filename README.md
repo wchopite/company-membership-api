@@ -17,6 +17,7 @@ A high-quality [NestJS](https://nestjs.com/) backend service implementing clean 
 ### Recommended VS Code Extensions
 - [SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) - View and query SQLite databases directly in VS Code
 - [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) - Test API endpoints using the included `.http` files
+- [Mermaid](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) - Preview Mermaid diagrams directly in markdown files
 
 > 💡 **Tip**: After installing SQLite Viewer, you can open `./data/db-companies.sqlite` directly in VS Code to inspect the database tables and data.
 
@@ -147,11 +148,7 @@ curl http://localhost:3000/api/companies/with-recent-transfers
 
 ## 🏗️ Architecture
 
-This API follows **Hexagonal Architecture** (Clean Architecture) principles:
-
-- **Domain Layer**: Contains business entities, value objects, and domain exceptions
-- **Application Layer**: Contains use cases, DTOs, and application services
-- **Infrastructure Layer**: Contains controllers, repositories, and external service implementations
+This API follows **Hexagonal Architecture** (Clean Architecture) principles with clear separation of concerns and business logic isolation.
 
 ### Project Structure
 
@@ -171,6 +168,207 @@ src/
     ├── logger/            # Logging utilities
     └── services/          # Shared services
 ```
+
+### Entity Relationship Diagram
+
+> 💡 **Tip**: Copy the code below and paste it into [Mermaid Live Editor](https://mermaid.live/) to view the interactive diagram, or use the [Mermaid](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) VS Code extension for inline preview.
+
+```mermaid
+erDiagram
+    Company {
+        string id PK
+        string name "max 100 chars"
+        string cuit UK "unique, max 15 chars"
+        enum type "PYME | CORPORATE"
+        boolean active "default: false"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Membership {
+        string id PK
+        string companyId FK
+        enum type "PYME | CORPORATE"
+        enum status "PENDING | ACTIVE | INACTIVE"
+        datetime requestDate "auto-generated"
+        datetime approvalDate "nullable"
+        string approvedBy "nullable"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Transaction {
+        string id PK
+        string companyId FK
+        enum type "TRANSFER | DEPOSIT | WITHDRAWAL"
+        decimal amount "precision 15, scale 2"
+        string description "max 500 chars"
+        enum status "PENDING | APPROVED | REJECTED | FAILED"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Company ||--o{ Membership : "OneToMany"
+    Company ||--o{ Transaction : "ManyToOne"
+```
+
+> **Note**: The Transaction entity has a `@ManyToOne` relationship to Company, but Company doesn't define the inverse `@OneToMany` relationship to maintain bounded context separation and avoid circular dependencies between modules.
+
+### Architecture Decisions
+
+#### Why Separate Membership Entity?
+
+**Decision**: Membership is a separate entity from Company, not just a boolean flag.
+
+**Rationale**:
+- **Business Logic**: A membership has its own lifecycle (pending → active → inactive)
+- **Audit Trail**: Track who approved memberships and when
+- **Future Extensibility**: Memberships can have different types, renewal dates, or terms
+- **Data Integrity**: Separate entity allows for better validation and business rules
+
+```typescript
+// Instead of this:
+class Company {
+  isMember: boolean; // Too simplistic
+}
+
+// We have this:
+class Membership {
+  status: MembershipStatus;    // PENDING, ACTIVE, INACTIVE
+  requestDate: Date;           // When they applied
+  approvalDate?: Date;         // When approved
+  approvedBy?: string;         // Who approved it
+}
+```
+
+#### Why Domain-Application-Infrastructure Layers?
+
+**Decision**: Strict layer separation following Hexagonal Architecture.
+
+**Benefits**:
+
+1. **Domain Layer** (Business Core)
+   - **Pure Business Logic**: No framework dependencies
+   - **Testability**: Easy to unit test business rules
+   - **Portability**: Can switch frameworks without changing business logic
+
+```typescript
+// Pure domain entity with business rules
+export class Company {
+  activate(): void {
+    if (this._active) {
+      throw new CompanyAlreadyActiveError(this._id);
+    }
+    this._active = true;
+  }
+}
+```
+
+2. **Application Layer** (Use Cases)
+   - **Orchestration**: Coordinates domain objects and infrastructure
+   - **Transaction Management**: Handles cross-entity operations
+   - **DTO Mapping**: Clean input/output interfaces
+
+```typescript
+// Use case orchestrating business operations
+export class RegisterCompanyMembershipUseCase {
+  async execute(dto: RegisterMembershipDto): Promise<MembershipCreatedDto> {
+    // 1. Validate business rules
+    // 2. Create entities
+    // 3. Save via repositories
+    // 4. Return mapped result
+  }
+}
+```
+
+3. **Infrastructure Layer** (Technical Details)
+   - **Framework Integration**: Controllers, TypeORM entities
+   - **External Services**: Database, APIs, file system
+   - **Dependency Inversion**: Implements domain interfaces
+
+```typescript
+// Infrastructure implements domain interface
+@Injectable()
+export class CompanyRepositoryImpl implements ICompanyRepository {
+  // TypeORM specific implementation
+}
+```
+
+#### Why Conventional Commits?
+
+**Decision**: Use [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages.
+
+**Format**: `<type>(<scope>): <description>`
+
+**Examples**:
+```bash
+feat(company): add membership registration endpoint
+fix(database): resolve CUIT validation regex
+docs(readme): update installation instructions
+refactor(domain): extract membership validation logic
+test(membership): add unit tests for approval workflow
+```
+
+**Benefits**:
+- **Automated Changelog**: Generate release notes automatically
+- **Semantic Versioning**: Determine version bumps based on commit types
+- **Better Collaboration**: Clear communication about change intent
+- **Tooling Integration**: Works with automated release pipelines
+- **Git History**: Easier to understand project evolution
+
+**Types Used**:
+- `feat`: New features
+- `fix`: Bug fixes
+- `docs`: Documentation changes
+- `refactor`: Code refactoring without functional changes
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+#### Why Conventional Commits?
+
+**Decision**: Use [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages.
+
+**Format**: `<type>(<scope>): <description>`
+
+**Examples**:
+```bash
+feat(company): add membership registration endpoint
+fix(database): resolve CUIT validation regex
+docs(readme): update installation instructions
+refactor(domain): extract membership validation logic
+test(membership): add unit tests for approval workflow
+```
+
+**Benefits**:
+- **Automated Changelog**: Generate release notes automatically
+- **Semantic Versioning**: Determine version bumps based on commit types
+- **Better Collaboration**: Clear communication about change intent
+- **Tooling Integration**: Works with automated release pipelines
+- **Git History**: Easier to understand project evolution
+
+**Types Used**:
+- `feat`: New features
+- `fix`: Bug fixes
+- `docs`: Documentation changes
+- `refactor`: Code refactoring without functional changes
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+#### Key Benefits of This Architecture
+
+- **Maintainability**: Changes in one layer don't affect others
+- **Testability**: Each layer can be tested in isolation
+- **Flexibility**: Easy to swap implementations (SQLite → PostgreSQL)
+- **Scalability**: Clear boundaries for team collaboration
+- **Domain Focus**: Business logic is protected from technical concerns
+
+#### Trade-offs
+
+- **Complexity**: More files and abstractions than a simple CRUD API
+- **Learning Curve**: Developers need to understand the architecture
+- **Initial Development**: Takes longer to set up than a monolithic approach
+
+**Why It's Worth It**: For business applications, the long-term benefits of maintainability, testability, and clear business logic separation outweigh the initial complexity cost.
 
 ---
 
