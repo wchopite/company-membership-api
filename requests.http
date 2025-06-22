@@ -28,9 +28,9 @@ Content-Type: {{contentType}}
 GET {{baseUrl}}/companies/recent-memberships
 Accept: {{contentType}}
 
-### 4. Get Companies with Recent Transfers (not implemented yet)
-# GET {{baseUrl}}/companies/with-recent-transfers
-# Accept: {{contentType}}
+### 4. Get Companies with Recent Transfers
+GET {{baseUrl}}/companies/with-recent-transfers
+Accept: {{contentType}}
 
 ### 5. Error Cases - Duplicate CUIT
 POST {{baseUrl}}/companies/membership
@@ -70,4 +70,24 @@ Content-Type: {{contentType}}
   "name": "Test Company",
   "cuit": "20-22222222-2",
   "type": "INVALID_TYPE"
+}
+
+### 9. Test Data - Create Companies for Transfer Testing
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Transfer Test Company 1",
+  "cuit": "20-33333333-3",
+  "type": "PYME"
+}
+
+###
+POST {{baseUrl}}/companies/membership
+Content-Type: {{contentType}}
+
+{
+  "name": "Transfer Test Company 2",
+  "cuit": "30-44444444-4",
+  "type": "CORPORATE"
 }
