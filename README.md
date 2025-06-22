@@ -2,6 +2,14 @@
   <img src="./docs/images/logo.svg" alt="Load Service Logo" width="400"/>
 </p>
 
+<p align="center">
+  <a href=".github/lambda-architecture.md">
+    <img src="https://img.shields.io/badge/⚡%20AWS%20Lambda-Design%20Analysis-ff6b35?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="Lambda Design Analysis"/>
+  </a>
+</p>
+
+> 📋 **[See full analysis of Lambda Function](.github/lambda-architecture.md)** - Architectural justification and integration strategy
+
 # 🚀 Company Membership API
 
 A high-quality [NestJS](https://nestjs.com/) backend service implementing clean architecture with hexagonal pattern, ready to run in development environment with minimal setup.
