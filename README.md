@@ -332,36 +332,6 @@ test(membership): add unit tests for approval workflow
 - `test`: Adding or updating tests
 - `chore`: Maintenance tasks
 
-#### Why Conventional Commits?
-
-**Decision**: Use [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages.
-
-**Format**: `<type>(<scope>): <description>`
-
-**Examples**:
-```bash
-feat(company): add membership registration endpoint
-fix(database): resolve CUIT validation regex
-docs(readme): update installation instructions
-refactor(domain): extract membership validation logic
-test(membership): add unit tests for approval workflow
-```
-
-**Benefits**:
-- **Automated Changelog**: Generate release notes automatically
-- **Semantic Versioning**: Determine version bumps based on commit types
-- **Better Collaboration**: Clear communication about change intent
-- **Tooling Integration**: Works with automated release pipelines
-- **Git History**: Easier to understand project evolution
-
-**Types Used**:
-- `feat`: New features
-- `fix`: Bug fixes
-- `docs`: Documentation changes
-- `refactor`: Code refactoring without functional changes
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-
 #### Key Benefits of This Architecture
 
 - **Maintainability**: Changes in one layer don't affect others
